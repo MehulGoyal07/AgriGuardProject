@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next"; // Import useTranslation
+import Logo from '../assets/logo.png';
 
 const Footer = () => {
   const { t } = useTranslation(); // Initialize useTranslation
@@ -13,7 +14,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <img
-                src="/path-to-your-logo.png" // Update with your logo path
+                src={Logo} // Update with your logo path
                 alt="AgriGuard Logo"
                 className="w-10 h-10"
               />
