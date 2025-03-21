@@ -1,0 +1,101 @@
+{
+    "header": {
+        "home": "Home",
+        "features": "Features",
+        "diagnosis": "Diagnosis",
+        "ourTeam": "Our Team",
+        "contactUs": "Contact Us"
+    },
+    "hero": {
+        "welcome": "Welcome to AgriGuard",
+        "description": "AgriGuard leverages advanced AI technology to help farmers diagnose crop diseases quickly and effectively. Upload your crop images to get instant insights, recommendations, and treatment options.",
+        "watchDemo": "Watch Demo",
+        "downloadApp": "Download App",
+        "appOverview": "App Overview",
+        "seamlessUpload": "Seamless Upload and Diagnosis",
+        "seamlessUploadDesc": "Easily upload crop images and receive instant disease diagnostics with our AI-powered platform.",
+        "detailedReports": "Detailed Reports and Remedies",
+        "detailedReportsDesc": "Get comprehensive reports on crop conditions and tailored remedies to address detected issues.",
+        "realTimeMonitoring": "Real-Time Monitoring",
+        "realTimeMonitoringDesc": "Monitor your crops in real-time with advanced sensors and AI analytics for proactive disease management."
+    },
+    "features": {
+        "title": "Features",
+        "instantDiseaseDetection": {
+            "title": "Instant Disease Detection",
+            "description": "Utilize our AI-driven technology to detect crop diseases in real-time with high precision."
+        },
+        "personalizedTreatment": {
+            "title": "Personalized Treatment Recommendations",
+            "description": "Get customized suggestions and remedies based on the specific disease detected in your crop images."
+        },
+        "userFriendlyInterface": {
+            "title": "User-Friendly Interface",
+            "description": "Experience a smooth and intuitive interface designed for ease of use by farmers and agricultural professionals."
+        },
+        "extensiveDiseaseDatabase": {
+            "title": "Extensive Disease Database",
+            "description": "Access a comprehensive database of crop diseases and effective treatments to manage crop health better."
+        },
+        "accurateAndReliable": {
+            "title": "Accurate and Reliable",
+            "description": "Our AI models are trained on extensive datasets to provide accurate and reliable disease detection."
+        },
+        "realTimeFeedback": {
+            "title": "Real-Time Feedback",
+            "description": "Receive instant feedback and actionable insights to address crop issues promptly."
+        }
+    },
+
+    "diagnosis": {
+        "title": "Disease Diagnosis",
+        "heading": "Get Your Crop Diagnosed with AgriGuard",
+        "subheading": "Upload an Image and Get Instant Insights",
+        "howItWorks": "How It Works: Upload a clear image of your crop, and our advanced AI model will analyze it to detect any potential diseases. You'll receive immediate feedback on the health of your crop, including detailed information about the condition, suggested actions, and remedies to address any issues.",
+        "whyChooseUs": "Why Choose Us: Our state-of-the-art technology leverages the latest in machine learning to provide accurate diagnoses and actionable insights. Whether you're a smallholder farmer or managing large fields, AgriGuard offers reliable support to ensure your crops stay healthy and productive.",
+        "tipsForBestResults": {
+            "title": "Tips for Best Results:",
+            "tip1": "Ensure your image is clear and well-lit.",
+            "tip2": "Try to capture the affected area of the crop.",
+            "tip3": "Avoid taking photos with excessive shadows or glare."
+        },
+        "chooseFile": "Choose File",
+        "submit": "Submit",
+        "analyzingImage": "Analyzing your image... Please wait.",
+        "diagnosisResults": {
+            "title": "Diagnosis Results",
+            "prediction": "Prediction:",
+            "suggestions": "Suggestions:",
+            "remedies": "Remedies:"
+        }
+    },
+
+    "contact": {
+        "title": "Contact Us",
+        "description": "Have a question or need assistance? Reach out to us, and we'll get back to you as soon as possible.",
+        "form": {
+            "name": "Name",
+            "namePlaceholder": "Enter your name",
+            "contact": "Contact",
+            "contactPlaceholder": "Enter your email or phone number",
+            "query": "Query",
+            "queryPlaceholder": "Enter your query or message",
+            "submit": "Submit"
+        }
+    },
+    "footer": {
+        "description": "Empowering farmers with AI-driven crop disease diagnosis and solutions.",
+        "quickLinks": "Quick Links",
+        "home": "Home",
+        "features": "Features",
+        "diagnosis": "Diagnosis",
+        "ourTeam": "Our Team",
+        "contactUs": "Contact Us",
+        "contactInfo": "Contact Information",
+        "email": "Email: support@agriguard.com",
+        "phone": "Phone: +1 (123) 456-7890",
+        "address": "Address: 123 Farm Lane, AgriCity, World",
+        "followUs": "Follow Us",
+        "copyright": "© 2023 AgriGuard. All rights reserved."
+    }
+}

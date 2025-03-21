@@ -1,44 +1,41 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import TitleBorder1 from "../assets/title-border1.svg"; // Update the path to your SVG
 import TitleBorder2 from "../assets/title-border2.svg"; // Update the path to your SVG
 
 const FeaturesSection = () => {
+  const { t } = useTranslation(); // Initialize useTranslation
+
   // Initialize AOS
   AOS.init({ duration: 1000, once: true });
 
   // Features data
   const features = [
     {
-      title: "Instant Disease Detection",
-      description:
-        "Utilize our AI-driven technology to detect crop diseases in real-time with high precision.",
+      title: t("features.instantDiseaseDetection.title"),
+      description: t("features.instantDiseaseDetection.description"),
     },
     {
-      title: "Personalized Treatment Recommendations",
-      description:
-        "Get customized suggestions and remedies based on the specific disease detected in your crop images.",
+      title: t("features.personalizedTreatment.title"),
+      description: t("features.personalizedTreatment.description"),
     },
     {
-      title: "User-Friendly Interface",
-      description:
-        "Experience a smooth and intuitive interface designed for ease of use by farmers and agricultural professionals.",
+      title: t("features.userFriendlyInterface.title"),
+      description: t("features.userFriendlyInterface.description"),
     },
     {
-      title: "Extensive Disease Database",
-      description:
-        "Access a comprehensive database of crop diseases and effective treatments to manage crop health better.",
+      title: t("features.extensiveDiseaseDatabase.title"),
+      description: t("features.extensiveDiseaseDatabase.description"),
     },
     {
-      title: "Accurate and Reliable",
-      description:
-        "Our AI models are trained on extensive datasets to provide accurate and reliable disease detection.",
+      title: t("features.accurateAndReliable.title"),
+      description: t("features.accurateAndReliable.description"),
     },
     {
-      title: "Real-Time Feedback",
-      description:
-        "Receive instant feedback and actionable insights to address crop issues promptly.",
+      title: t("features.realTimeFeedback.title"),
+      description: t("features.realTimeFeedback.description"),
     },
   ];
 
@@ -51,7 +48,9 @@ const FeaturesSection = () => {
         {/* Section Title */}
         <div className="flex items-center justify-center gap-4 mb-12" data-aos="fade-up">
           <img src={TitleBorder1} alt="Border Decoration" className="w-16 md:w-24" />
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Features</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            {t("features.title")}
+          </h2>
           <img src={TitleBorder2} alt="Border Decoration" className="w-16 md:w-24" />
         </div>
 

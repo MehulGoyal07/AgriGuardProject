@@ -2,17 +2,35 @@ import AOS from "aos"; // AOS for scroll-based animations
 import "aos/dist/aos.css"; // AOS styles
 import { AnimatePresence, motion } from "framer-motion"; // Framer Motion for animations
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.png"; // Update the path to your logo
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false); // State for mobile menu toggle
+  const { t, i18n } = useTranslation(); // Initialize useTranslation and i18n
+  const [language, setLanguage] = useState(i18n.language); // State for selected language
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true }); // Initialize AOS with a duration and only once
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen); // Toggle mobile menu
+
+  // Menu items with translation keys
+  const menuItems = [
+    { key: "home", link: "#home" },
+    { key: "features", link: "#features" },
+    { key: "diagnosis", link: "#diagnosis" },
+    { key: "ourTeam", link: "#ourteam" },
+    { key: "contactUs", link: "#contactus" },
+  ];
+
+  // Change language
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng); // Change language
+    setLanguage(lng); // Update selected language state
+  };
 
   return (
     <>
@@ -34,22 +52,56 @@ const Header = () => {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex items-center space-x-8 text-lg font-sans">
-            {["Home", "Features", "Diagnosis", "Our Team", "Contact Us"].map(
-              (item, index) => (
-                <motion.div
-                  whileHover={{ y: -5, color: "#FF7F50" }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  key={index}
+            {menuItems.map((item, index) => (
+              <motion.div
+                whileHover={{ y: -5, color: "#FF7F50" }}
+                transition={{ type: "spring", stiffness: 300 }}
+                key={index}
+              >
+                <Link
+                  to={item.link}
+                  className="hover:text-accent transition duration-300"
                 >
-                  <Link
-                    to={`#${item.toLowerCase().replace(" ", "")}`}
-                    className="hover:text-accent transition duration-300"
-                  >
-                    {item}
-                  </Link>
-                </motion.div>
-              )
-            )}
+                  {t(`header.${item.key}`)}
+                </Link>
+              </motion.div>
+            ))}
+
+            {/* Language Switcher Dropdown */}
+            <div className="relative">
+              <select
+                value={language}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 appearance-none cursor-pointer pr-10"
+              >
+                <option value="en" className="bg-primary/90 text-white">
+                  English
+                </option>
+                <option value="hi" className="bg-primary/90 text-white">
+                  हिंदी
+                </option>
+                <option value="ta" className="bg-primary/90 text-white">
+                  தமிழ்
+                </option>
+              </select>
+              {/* Custom Dropdown Arrow */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
           </nav>
 
           {/* Hamburger Icon for Mobile */}
@@ -103,23 +155,40 @@ const Header = () => {
                 </svg>
               </button>
               <nav className="flex flex-col space-y-6 mt-12 text-lg font-sans">
-                {["Home", "Features", "Diagnosis", "Our Team", "Contact Us"].map(
-                  (item, index) => (
-                    <motion.div
-                      whileHover={{ scale: 1.1, color: "#FF7F50" }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      key={index}
+                {menuItems.map((item, index) => (
+                  <motion.div
+                    whileHover={{ scale: 1.1, color: "#FF7F50" }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    key={index}
+                  >
+                    <Link
+                      to={item.link}
+                      className="hover:text-accent transition duration-300"
+                      onClick={toggleMenu} // Close menu on click
                     >
-                      <Link
-                        to={`#${item.toLowerCase().replace(" ", "")}`}
-                        className="hover:text-accent transition duration-300"
-                        onClick={toggleMenu} // Close menu on click
-                      >
-                        {item}
-                      </Link>
-                    </motion.div>
-                  )
-                )}
+                      {t(`header.${item.key}`)}
+                    </Link>
+                  </motion.div>
+                ))}
+
+                {/* Language Switcher for Mobile */}
+                <div className="relative">
+                  <select
+                    value={language}
+                    onChange={(e) => changeLanguage(e.target.value)}
+                    className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 appearance-none cursor-pointer pr-10"
+                  >
+                    <option value="en" className="bg-primary/90 text-white">
+                      English
+                    </option>
+                    <option value="hi" className="bg-primary/90 text-white">
+                      हिंदी
+                    </option>
+                    <option value="ta" className="bg-primary/90 text-white">
+                      தமிழ்
+                    </option>
+                  </select>
+                </div>
               </nav>
             </motion.div>
           )}

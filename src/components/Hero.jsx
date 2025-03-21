@@ -2,6 +2,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import Img6 from "../assets/home-background.png"; // Background image
 import Img7 from "../assets/img7.png"; // Update the path to your image
 import DemoVideo from "../assets/template.mp4"; // Update the path to your video
@@ -10,6 +11,7 @@ import TitleBorder2 from "../assets/title-border2.svg"; // Update the path to yo
 
 const HeroSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   // Initialize AOS
   AOS.init({ duration: 1000, once: true });
@@ -32,10 +34,10 @@ const HeroSection = () => {
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          Welcome to AgriGuard
+          {t("hero.welcome")}
         </motion.h1>
         <p className="text-lg text-gray-200 mb-8 max-w-2xl">
-          AgriGuard leverages advanced AI technology to help farmers diagnose crop diseases quickly and effectively. Upload your crop images to get instant insights, recommendations, and treatment options.
+          {t("hero.description")}
         </p>
 
         <div className="flex gap-4">
@@ -46,7 +48,7 @@ const HeroSection = () => {
             whileTap={{ scale: 0.95 }}
             onClick={toggleModal}
           >
-            Watch Demo
+            {t("hero.watchDemo")}
           </motion.button>
           <motion.button
             id="download-app-btn"
@@ -54,7 +56,7 @@ const HeroSection = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Download App
+            {t("hero.downloadApp")}
           </motion.button>
         </div>
       </div>
@@ -67,7 +69,9 @@ const HeroSection = () => {
         <div className="text-center relative">
           <div className="flex justify-center gap-4">
             <img src={TitleBorder1} alt="Border Decoration" className="w-16 md:w-24" />
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mx-4">App Overview</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mx-4">
+              {t("hero.appOverview")}
+            </h2>
             <img src={TitleBorder2} alt="Border Decoration" className="w-16 md:w-24" />
           </div>
         </div>
@@ -90,9 +94,11 @@ const HeroSection = () => {
             />
           </div>
           <div className="flex-1">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Seamless Upload and Diagnosis</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              {t("hero.seamlessUpload")}
+            </h3>
             <p className="text-gray-600">
-              Easily upload crop images and receive instant disease diagnostics with our AI-powered platform.
+              {t("hero.seamlessUploadDesc")}
             </p>
           </div>
         </motion.div>
@@ -105,9 +111,11 @@ const HeroSection = () => {
           data-aos="fade-left"
         >
           <div className="flex-1 order-2 md:order-1">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Detailed Reports and Remedies</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              {t("hero.detailedReports")}
+            </h3>
             <p className="text-gray-600">
-              Get comprehensive reports on crop conditions and tailored remedies to address detected issues.
+              {t("hero.detailedReportsDesc")}
             </p>
           </div>
           <div className="flex-1 order-1 md:order-2">
@@ -134,9 +142,11 @@ const HeroSection = () => {
             />
           </div>
           <div className="flex-1">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Real-Time Monitoring</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              {t("hero.realTimeMonitoring")}
+            </h3>
             <p className="text-gray-600">
-              Monitor your crops in real-time with advanced sensors and AI analytics for proactive disease management.
+              {t("hero.realTimeMonitoringDesc")}
             </p>
           </div>
         </motion.div>

@@ -1,18 +1,31 @@
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const ContactUs = () => {
-  // Initialize AOS
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: true });
-  }, []);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Thank you for contacting us! We'll get back to you soon.");
+  };
+
+  // Animation variants for staggered form fields
+  const formVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const fieldVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -21,94 +34,95 @@ const ContactUs = () => {
         {/* Title Section */}
         <motion.div
           className="text-center mb-16"
-          data-aos="fade-down"
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">
-            Contact Us
+            {t("contact.title")}
           </h2>
           <p className="text-lg text-gray-600">
-            Have a question or need assistance? Reach out to us, and we&apos;ll get
-            back to you as soon as possible.
+            {t("contact.description")}
           </p>
         </motion.div>
 
         {/* Contact Form */}
         <motion.form
           className="bg-white p-8 md:p-12 rounded-lg shadow-lg"
-          data-aos="fade-up"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          initial="hidden"
+          whileInView="visible"
+          variants={formVariants}
+          viewport={{ once: true }}
           onSubmit={handleSubmit}
         >
-          <div className="space-y-6">
+          <motion.div className="space-y-6">
             {/* Name Field */}
-            <div>
+            <motion.div variants={fieldVariants}>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
               >
-                Name
+                {t("contact.form.name")}
               </label>
               <input
                 type="text"
                 id="name"
                 name="name"
-                placeholder="Enter your name"
+                placeholder={t("contact.form.namePlaceholder")}
                 className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 required
               />
-            </div>
+            </motion.div>
 
             {/* Contact Field */}
-            <div>
+            <motion.div variants={fieldVariants}>
               <label
                 htmlFor="contact"
                 className="block text-sm font-medium text-gray-700"
               >
-                Contact
+                {t("contact.form.contact")}
               </label>
               <input
                 type="text"
                 id="contact"
                 name="contact"
-                placeholder="Enter your email or phone number"
+                placeholder={t("contact.form.contactPlaceholder")}
                 className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 required
               />
-            </div>
+            </motion.div>
 
             {/* Query Field */}
-            <div>
+            <motion.div variants={fieldVariants}>
               <label
                 htmlFor="query"
                 className="block text-sm font-medium text-gray-700"
               >
-                Query
+                {t("contact.form.query")}
               </label>
               <textarea
                 id="query"
                 name="query"
                 rows="5"
-                placeholder="Enter your query or message"
+                placeholder={t("contact.form.queryPlaceholder")}
                 className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 required
               ></textarea>
-            </div>
+            </motion.div>
 
             {/* Submit Button */}
-            <motion.button
-              type="submit"
-              className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Submit
-            </motion.button>
-          </div>
+            <motion.div variants={fieldVariants}>
+              <motion.button
+                type="submit"
+                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {t("contact.form.submit")}
+              </motion.button>
+            </motion.div>
+          </motion.div>
         </motion.form>
       </div>
     </section>

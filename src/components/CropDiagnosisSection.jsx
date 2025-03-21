@@ -1,8 +1,9 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import axios from "axios";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import TitleBorder1 from "../assets/title-border1.svg";
 import TitleBorder2 from "../assets/title-border2.svg";
 
@@ -15,6 +16,7 @@ const CropDiagnosisSection = () => {
     suggestions: "N/A",
     remedies: "N/A",
   });
+  const { t } = useTranslation(); // Initialize useTranslation
 
   // Initialize AOS
   AOS.init({ duration: 1000, once: true });
@@ -73,7 +75,7 @@ const CropDiagnosisSection = () => {
       <div className="title flex justify-center items-center gap-4 mt-12" data-aos="fade-up">
         <img src={TitleBorder1} alt="Border Top" className="w-16 md:w-24" />
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800">
-          Disease Diagnosis
+          {t("diagnosis.title")}
         </h2>
         <img src={TitleBorder2} alt="Border Bottom" className="w-16 md:w-24" />
       </div>
@@ -84,38 +86,32 @@ const CropDiagnosisSection = () => {
           className="text-2xl md:text-3xl font-bold text-gray-800 text-center"
           data-aos="fade-up"
         >
-          Get Your Crop Diagnosed with AgriGuard
+          {t("diagnosis.heading")}
         </h2>
         <h3
           className="text-lg md:text-xl text-gray-600 text-center mt-4"
           data-aos="fade-up"
           data-aos-delay="100"
         >
-          Upload an Image and Get Instant Insights
+          {t("diagnosis.subheading")}
         </h3>
 
         {/* Description Section */}
         <div className="mt-8 space-y-6" data-aos="fade-up" data-aos-delay="200">
           <p className="text-gray-600">
-            <strong>How It Works:</strong> Upload a clear image of your crop, and our advanced AI
-            model will analyze it to detect any potential diseases. You'll receive immediate feedback
-            on the health of your crop, including detailed information about the condition, suggested
-            actions, and remedies to address any issues.
+            <strong>{t("diagnosis.howItWorks")}</strong>
           </p>
           <p className="text-gray-600">
-            <strong>Why Choose Us:</strong> Our state-of-the-art technology leverages the latest in
-            machine learning to provide accurate diagnoses and actionable insights. Whether you're a
-            smallholder farmer or managing large fields, AgriGuard offers reliable support to ensure
-            your crops stay healthy and productive.
+            <strong>{t("diagnosis.whyChooseUs")}</strong>
           </p>
           <p className="text-gray-600">
-            <strong>Tips for Best Results:</strong>
+            <strong>{t("diagnosis.tipsForBestResults.title")}</strong>
             <br />
-            • Ensure your image is clear and well-lit.
+            • {t("diagnosis.tipsForBestResults.tip1")}
             <br />
-            • Try to capture the affected area of the crop.
+            • {t("diagnosis.tipsForBestResults.tip2")}
             <br />
-            • Avoid taking photos with excessive shadows or glare.
+            • {t("diagnosis.tipsForBestResults.tip3")}
           </p>
         </div>
 
@@ -140,7 +136,7 @@ const CropDiagnosisSection = () => {
               accept="image/*"
               onChange={handleFileChange}
             />
-            <span className="text-gray-600">{fileName || "Choose File"}</span>
+            <span className="text-gray-600">{fileName || t("diagnosis.chooseFile")}</span>
           </motion.label>
           <motion.button
             type="submit"
@@ -148,7 +144,7 @@ const CropDiagnosisSection = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Submit
+            {t("diagnosis.submit")}
           </motion.button>
         </motion.form>
 
@@ -160,7 +156,7 @@ const CropDiagnosisSection = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            Analyzing your image... Please wait.
+            {t("diagnosis.analyzingImage")}
           </motion.div>
         )}
 
@@ -172,15 +168,17 @@ const CropDiagnosisSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h5 className="text-2xl font-bold text-gray-800 mb-6">Diagnosis Results</h5>
+            <h5 className="text-2xl font-bold text-gray-800 mb-6">
+              {t("diagnosis.diagnosisResults.title")}
+            </h5>
             <p className="text-gray-600 mb-4">
-              <strong>Prediction:</strong> {diagnosisResult.prediction}
+              <strong>{t("diagnosis.diagnosisResults.prediction")}</strong> {diagnosisResult.prediction}
             </p>
             <p className="text-gray-600 mb-4">
-              <strong>Suggestions:</strong> {diagnosisResult.suggestions}
+              <strong>{t("diagnosis.diagnosisResults.suggestions")}</strong> {diagnosisResult.suggestions}
             </p>
             <p className="text-gray-600">
-              <strong>Remedies:</strong> {diagnosisResult.remedies}
+              <strong>{t("diagnosis.diagnosisResults.remedies")}</strong> {diagnosisResult.remedies}
             </p>
           </motion.div>
         )}
