@@ -47,6 +47,7 @@
         }
     },
 
+
     "diagnosis": {
         "title": "Disease Diagnosis",
         "heading": "Get Your Crop Diagnosed with AgriGuard",
@@ -67,7 +68,8 @@
             "prediction": "Prediction:",
             "suggestions": "Suggestions:",
             "remedies": "Remedies:"
-        }
+        },
+        "orderPesticides": "Order Pesticides/Medicines"
     },
 
     "contact": {

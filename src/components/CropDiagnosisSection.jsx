@@ -4,6 +4,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import TitleBorder1 from "../assets/title-border1.svg";
 import TitleBorder2 from "../assets/title-border2.svg";
 
@@ -17,6 +18,7 @@ const CropDiagnosisSection = () => {
     remedies: "N/A",
   });
   const { t } = useTranslation(); // Initialize useTranslation
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Initialize AOS
   AOS.init({ duration: 1000, once: true });
@@ -64,6 +66,16 @@ const CropDiagnosisSection = () => {
     }
 
     setIsSubmitted(false);
+  };
+
+  // Handle order pesticides/medicines
+  const handleOrder = () => {
+    const user = localStorage.getItem("user"); // Check if user is logged in
+    if (!user) {
+      navigate("/auth"); // Redirect to Sign-In/Sign-Up page
+    } else {
+      navigate("/marketplace"); // Redirect to Marketplace page
+    }
   };
 
   return (
@@ -177,9 +189,19 @@ const CropDiagnosisSection = () => {
             <p className="text-gray-600 mb-4">
               <strong>{t("diagnosis.diagnosisResults.suggestions")}</strong> {diagnosisResult.suggestions}
             </p>
-            <p className="text-gray-600">
+            <p className="text-gray-600 mb-4">
               <strong>{t("diagnosis.diagnosisResults.remedies")}</strong> {diagnosisResult.remedies}
             </p>
+
+            {/* Order Pesticides/Medicines Button */}
+            <motion.button
+              onClick={handleOrder}
+              className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {t("diagnosis.orderPesticides")}
+            </motion.button>
           </motion.div>
         )}
       </div>
