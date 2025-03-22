@@ -22,7 +22,7 @@ const Header = () => {
     { key: "home", link: "#home" },
     { key: "features", link: "#features" },
     { key: "diagnosis", link: "#diagnosis" },
-    { key: "ourTeam", link: "#ourteam" },
+    { key: "marketplace", link: "/marketplace" }, // Added Marketplace link
     { key: "contactUs", link: "#contactus" },
   ];
 
