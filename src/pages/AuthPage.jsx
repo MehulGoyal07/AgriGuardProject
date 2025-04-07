@@ -1,21 +1,27 @@
-/* eslint-disable react/prop-types */
-import { useState } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import SignIn from '../components/Auth/SignIn';
-import SignUp from '../components/Auth/SignUp';
+import { useEffect, useState } from 'react';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function AuthPage() {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState(
     location.pathname.includes('signup') ? 'signup' : 'signin'
   );
 
   // Redirect to marketplace if already logged in
-  if (user) {
-    return <Navigate to="/marketplace" replace />;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate('/marketplace');
+    }
+  }, [user, navigate]);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    navigate(`/auth/${tab}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -23,33 +29,27 @@ export default function AuthPage() {
         <div className="flex justify-center space-x-4 mb-8">
           <TabButton
             active={activeTab === 'signin'}
-            onClick={() => setActiveTab('signin')}
-            to="/auth/signin"
+            onClick={() => handleTabChange('signin')}
           >
             Sign In
           </TabButton>
           <TabButton
             active={activeTab === 'signup'}
-            onClick={() => setActiveTab('signup')}
-            to="/auth/signup"
+            onClick={() => handleTabChange('signup')}
           >
             Sign Up
           </TabButton>
         </div>
 
         <div className="bg-white shadow rounded-lg overflow-hidden">
-          <Routes>
-            <Route path="signin" element={<SignIn />} />
-            <Route path="signup" element={<SignUp />} />
-            <Route index element={<Navigate to="signin" replace />} />
-          </Routes>
+          <Outlet />
         </div>
       </div>
     </div>
   );
 }
 
-function TabButton({ active, children, ...props }) {
+function TabButton({ active, children, onClick }) {
   return (
     <button
       className={`px-4 py-2 text-sm font-medium rounded-t-md transition-colors duration-200 ${
@@ -57,7 +57,7 @@ function TabButton({ active, children, ...props }) {
           ? 'bg-white text-green-600 border-t-2 border-l-2 border-r-2 border-green-600'
           : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
       }`}
-      {...props}
+      onClick={onClick}
     >
       {children}
     </button>

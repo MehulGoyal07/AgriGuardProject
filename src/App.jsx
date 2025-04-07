@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google'; // ✅ Google OAuth wrapper
 import SignIn from './components/Auth/SignIn';
 import SignUp from './components/Auth/SignUp';
 import MaintenanceMode from './components/MaintenanceMode';
@@ -9,29 +9,41 @@ import AboutUs from './pages/AboutUs';
 import AuthPage from './pages/AuthPage';
 import ContactUs from './pages/ContactUs';
 import Home from './pages/Home';
+import MarketplacePage from './pages/MarketplacePage';
+import ProtectedRoute from './components/Shared/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+
+const clientId = '445921415562-m37dlhlaes3pp4dd23qf2tre1esavt9v.apps.googleusercontent.com'; 
 
 function App() {
-  const isMaintenanceMode = false; // Set this to false to disable maintenance mode
+  const isMaintenanceMode = false;
 
   return (
-    <>
-      <BrowserRouter>
-        <ScrollToTop />
-        {isMaintenanceMode ? (
-          <MaintenanceMode />
-        ) : (
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/aboutus" element={<AboutUs />} />
-            <Route path="/contactus" element={<ContactUs />} />
-            <Route path = "/auth" element={<AuthPage/>}>
-               <Route path="signin" element={<SignIn />} />
-               <Route path="signup" element={<SignUp />} />
-            </Route>
-          </Routes>
-        )}
-      </BrowserRouter>
-    </>
+    <GoogleOAuthProvider clientId={clientId}>
+      <AuthProvider>
+          <ScrollToTop />
+          {isMaintenanceMode ? (
+            <MaintenanceMode />
+          ) : (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/contactus" element={<ContactUs />} />
+
+              <Route path="/auth/*" element={<AuthPage />}>
+                <Route path="signin" element={<SignIn />} />
+                <Route path="signup" element={<SignUp />} />
+              </Route>
+
+              {/* Protected marketplace route */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/marketplace" element={<MarketplacePage />} />
+              </Route>
+            </Routes>
+          )}
+        
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 

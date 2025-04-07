@@ -1,9 +1,10 @@
-import { StrictMode, useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
 import './index.css';
+import { AuthProvider } from './context/AuthContext';
 
-// Function to add the Google Tag script dynamically
 const addGoogleTag = () => {
   const script1 = document.createElement('script');
   script1.async = true;
@@ -20,17 +21,18 @@ const addGoogleTag = () => {
   document.head.appendChild(script2);
 };
 
-// Root component to initialize the Google Tag
 const RootApp = () => {
   useEffect(() => {
-    addGoogleTag();  // Add the Google Tag when the component mounts
+    addGoogleTag();
   }, []);
 
   return (
-    <StrictMode>
-      <App />
-    </StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   );
 };
 
-createRoot(document.getElementById('root')).render(<RootApp />);
+ReactDOM.createRoot(document.getElementById('root')).render(<RootApp />);
