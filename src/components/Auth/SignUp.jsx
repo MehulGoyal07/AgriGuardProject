@@ -1,5 +1,8 @@
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import { useState } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { ChevronRight, Leaf, Lock, Mail, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -15,19 +18,57 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const controls = useAnimation();
+  const [ref, inView] = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible');
+    }
+  }, [controls, inView]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
+    if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email format';
     if (!formData.password) newErrors.password = 'Password is required';
+    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
@@ -41,153 +82,205 @@ export default function SignUp() {
 
     setIsLoading(true);
     try {
-      // Replace with your actual signup API call
-      // const response = await axios.post('/api/auth/signup', formData);
-      // handle successful signup (e.g., auto-login or redirect)
+      // Dummy DB submission — replace with real backend/Firebase logic
+      console.log('User submitted:', formData);
+      await new Promise(resolve => setTimeout(resolve, 1500));
       navigate('/marketplace');
     } catch (error) {
       console.error('Signup failed:', error);
-      setErrors({ api: error.response?.data?.message || 'Signup failed' });
+      setErrors({ api: error.response?.data?.message || 'Signup failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your AgriGuard account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <Link 
-            to="/auth/signin" 
-            className="font-medium text-green-600 hover:text-green-500"
-          >
-            Sign in
-          </Link>
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <div className="mb-6">
-              <div className="flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleFailure}
-                  theme="filled_blue"
-                  size="large"
-                  text="signup_with"
-                  shape="rectangular"
-                  width="300"
-                />
-              </div>
-            </div>
-          </GoogleOAuthProvider>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
-                Or register with email
-              </span>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-amber-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="sm:mx-auto sm:w-full sm:max-w-md"
+      >
+        <motion.div variants={itemVariants} className="flex flex-col items-center mb-8">
+          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+            <Leaf className="w-8 h-8 text-green-600" />
           </div>
+          <h2 className="text-center text-3xl font-bold text-gray-800 font-display">
+            Join <span className="text-green-600">AgriGuard</span>
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Start protecting your crops with AI today
+          </p>
+        </motion.div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {errors.api && (
-              <div className="text-red-500 text-sm text-center">{errors.api}</div>
-            )}
-            
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full px-3 py-2 border ${errors.name ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-                />
-                {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+        <motion.div 
+          variants={itemVariants}
+          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-green-100/50"
+        >
+          <div className="py-8 px-6 sm:px-10">
+            <motion.div variants={itemVariants} className="mb-6">
+              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleFailure}
+                    theme="filled_blue"
+                    size="large"
+                    text="signup_with"
+                    shape="pill"
+                    width="300"
+                  />
+                </div>
+              </GoogleOAuthProvider>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full px-3 py-2 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-                />
-                {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+              <div className="relative flex justify-center">
+                <span className="px-3 bg-white text-sm text-gray-500 font-medium">
+                  Or register with email
+                </span>
               </div>
-            </div>
+            </motion.div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full px-3 py-2 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-                />
-                {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
-              </div>
-            </div>
+            <motion.form 
+              variants={containerVariants}
+              initial="hidden"
+              animate={controls}
+              ref={ref}
+              className="space-y-4"
+              onSubmit={handleSubmit}
+            >
+              {/* Name */}
+              <motion.div variants={itemVariants}>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-3 rounded-lg border ${errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-green-500 focus:border-green-500'} placeholder-gray-400 focus:outline-none transition-all duration-200`}
+                    placeholder="Your Name"
+                  />
+                </div>
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                )}
+              </motion.div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full px-3 py-2 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-                />
-                {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
-              </div>
-            </div>
+              {/* Email */}
+              <motion.div variants={itemVariants}>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-3 rounded-lg border ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-green-500 focus:border-green-500'} placeholder-gray-400 focus:outline-none transition-all duration-200`}
+                    placeholder="you@example.com"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
+              </motion.div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Creating account...' : 'Create Account'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+              {/* Password */}
+              <motion.div variants={itemVariants}>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-3 rounded-lg border ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-green-500 focus:border-green-500'} placeholder-gray-400 focus:outline-none transition-all duration-200`}
+                    placeholder="••••••••"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                )}
+              </motion.div>
+
+              {/* Confirm Password */}
+              <motion.div variants={itemVariants}>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-3 rounded-lg border ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-green-500 focus:border-green-500'} placeholder-gray-400 focus:outline-none transition-all duration-200`}
+                    placeholder="••••••••"
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                )}
+              </motion.div>
+
+              {/* Submit */}
+              <motion.div variants={itemVariants}>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex justify-center items-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow transition duration-200"
+                >
+                  {isLoading ? (
+                    <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                  ) : (
+                    <>
+                      Register
+                      <ChevronRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
+                </button>
+              </motion.div>
+
+              <motion.div variants={itemVariants} className="text-center text-sm text-gray-500 mt-4">
+                Already have an account?{' '}
+                <Link to="/auth/signin" className="text-green-600 hover:underline font-medium">
+                  Log in
+                </Link>
+              </motion.div>
+            </motion.form>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

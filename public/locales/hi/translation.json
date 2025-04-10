@@ -1,10 +1,16 @@
 {
     "header": {
         "home": "होम",
-        "features": "फीचर्स",
-        "diagnosis": "निदान",
+        "detection": "रोग पहचान",
         "marketplace": "मार्केटप्लेस",
-        "contactUs": "संपर्क करें"
+        "about": "हमारे बारे में",
+        "account": "खाता",
+        "profile": "मेरी प्रोफ़ाइल",
+        "orders": "मेरे आदेश",
+        "logout": "लॉग आउट",
+        "cart": "कार्ट",
+        "signIn": "साइन इन",
+        "signUp": "साइन अप"
     },
     "hero": {
         "welcome": "अग्रिगार्ड में आपका स्वागत है",

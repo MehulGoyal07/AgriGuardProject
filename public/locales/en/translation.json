@@ -1,10 +1,16 @@
 {
     "header": {
         "home": "Home",
-        "features": "Features",
-        "diagnosis": "Diagnosis",
+        "detection": "Disease Detection",
         "marketplace": "Marketplace",
-        "contactUs": "Contact Us"
+        "about": "About Us",
+        "account": "Account",
+        "profile": "My Profile",
+        "orders": "My Orders",
+        "logout": "Logout",
+        "cart": "Cart",
+        "signIn": "Sign In",
+        "signUp": "Sign Up"
     },
     "hero": {
         "welcome": "Welcome to AgriGuard",
