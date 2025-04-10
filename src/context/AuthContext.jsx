@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     const loadUser = async () => {
       try {
         if (token) {
+          // Replace with your actual API endpoint
           const res = await axios.get('/api/auth/me', {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -51,9 +52,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Google OAuth failure handler
-  const handleGoogleFailure = () => {
-    console.log('Google login failed');
+  // Email/password login
+  const loginWithEmail = async (email, password) => {
+    try {
+      const res = await axios.post('/api/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      setToken(res.data.token);
+      setUser(res.data.user);
+      navigate('/marketplace');
+      return true;
+    } catch (err) {
+      console.error('Login failed:', err);
+      throw err;
+    }
   };
 
   // Logout function
@@ -62,12 +73,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
-    navigate('/auth');
+    navigate('/auth/signin');
   };
 
-  // Protected route access check
+  // Check if user is authenticated
   const isAuthenticated = () => {
-    return !!token;
+    return !!user;
   };
 
   return (
@@ -77,7 +88,7 @@ export const AuthProvider = ({ children }) => {
         token,
         loading,
         handleGoogleSuccess,
-        handleGoogleFailure,
+        loginWithEmail,
         logout,
         isAuthenticated
       }}
