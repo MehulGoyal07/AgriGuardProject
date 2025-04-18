@@ -9,21 +9,26 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Initialize user from localStorage if available
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Initialize auth state from localStorage
+  // Initialize auth state
   useEffect(() => {
     const loadUser = async () => {
       try {
         if (token) {
-          // Replace with your actual API endpoint
           const res = await axios.get('/api/auth/me', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          setUser(res.data.user);
+          const userData = res.data.user;
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
         }
       } catch (err) {
         console.error('Auth check failed:', err);
@@ -35,7 +40,6 @@ export const AuthProvider = ({ children }) => {
     loadUser();
   }, [token]);
 
-  // Google OAuth success handler
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const res = await axios.post('/api/auth/google', {
@@ -43,6 +47,7 @@ export const AuthProvider = ({ children }) => {
       });
       
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
       setToken(res.data.token);
       setUser(res.data.user);
       navigate('/marketplace');
@@ -52,11 +57,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Email/password login
   const loginWithEmail = async (email, password) => {
     try {
       const res = await axios.post('/api/auth/login', { email, password });
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
       setToken(res.data.token);
       setUser(res.data.user);
       navigate('/marketplace');
@@ -67,18 +72,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
+  const register = async (userData) => {
+    try {
+      const res = await axios.post('/api/auth/register', userData);
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setToken(res.data.token);
+      setUser(res.data.user);
+      navigate('/marketplace');
+      return true;
+    } catch (err) {
+      console.error('Registration failed:', err);
+      throw err;
+    }
+  };
+
   const logout = () => {
     googleLogout();
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setToken(null);
     setUser(null);
     navigate('/auth/signin');
   };
 
-  // Check if user is authenticated
   const isAuthenticated = () => {
-    return !!user;
+    return !!user && !!token;
+  };
+
+  const updateUser = (updatedData) => {
+    setUser(prev => ({ ...prev, ...updatedData }));
+    localStorage.setItem('user', JSON.stringify({ ...user, ...updatedData }));
   };
 
   return (
@@ -89,8 +113,10 @@ export const AuthProvider = ({ children }) => {
         loading,
         handleGoogleSuccess,
         loginWithEmail,
+        register,
         logout,
-        isAuthenticated
+        isAuthenticated,
+        updateUser
       }}
     >
       {children}
