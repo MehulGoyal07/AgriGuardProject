@@ -1,7 +1,5 @@
 # 🌱 AgriGuard - AI-Driven Crop Disease Management System
 
-![AgriGuard Logo](./src/assets/logo.png) <!-- Replace with your actual logo path -->
-
 **An intelligent platform for farmers to detect crop diseases and get recommended remedies**
 
 [![Live Demo](https://img.shields.io/badge/Demo-Visit%20Site-green?style=for-the-badge)](https://agriguard.example.com) <!-- Add your actual URL -->
