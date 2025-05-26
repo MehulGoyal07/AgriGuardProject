@@ -8,6 +8,7 @@ import { FaGlobe, FaShoppingCart, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/logo.png";
 import { useAuth } from "../../context/AuthContext";
+import CartIcon from "../Cart/CartIcon";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -154,16 +155,8 @@ const Navbar = () => {
           <div className="flex items-center space-x-4 ml-4">
             {isAuthenticated ? (
               <>
-                <motion.div whileHover={{ scale: 1.1 }} className="relative">
-                  <Link 
-                    to="/cart" 
-                    className="p-2 text-white hover:text-green-300"
-                  >
-                    <FaShoppingCart className="h-6 w-6" />
-                    <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      3
-                    </span>
-                  </Link>
+                <motion.div whileHover={{ scale: 1.1 }}>
+                  <CartIcon />
                 </motion.div>
                 
                 <div className="relative" ref={profileDropdownRef}>
@@ -188,6 +181,14 @@ const Navbar = () => {
                         <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
                         <p className="text-xs text-gray-500">{user?.email || ''}</p>
                       </div>
+                      <Link
+                        to="/orders"
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-green-50 text-sm flex items-center transition-colors"
+                        onClick={() => setShowProfileDropdown(false)}
+                      >
+                        <FaShoppingCart className="h-4 w-4 mr-2 text-green-600" />
+                        Orders
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-50 text-sm flex items-center transition-colors"

@@ -6,10 +6,9 @@ import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 
 export default function SignUp() {
-  const { handleGoogleSuccess, handleGoogleFailure } = useAuth();
+  const { handleGoogleSuccess, handleGoogleFailure, register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -84,17 +83,22 @@ export default function SignUp() {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/auth/register', {
+      const result = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
       
-      toast.success('Account created successfully! Please sign in.');
-      navigate('/auth/signin');
+      if (result.success) {
+        toast.success('Account created successfully! Please sign in.');
+        navigate('/auth/signin');
+      } else {
+        toast.error(result.error || 'Signup failed. Please try again.');
+        setErrors({ api: result.error || 'Signup failed. Please try again.' });
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Signup failed. Please try again.');
-      setErrors({ api: error.response?.data?.message || 'Signup failed. Please try again.' });
+      toast.error('Signup failed. Please try again.');
+      setErrors({ api: 'Signup failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -130,17 +134,17 @@ export default function SignUp() {
         >
           <div className="py-8 px-6 sm:px-10">
             <motion.div variants={itemVariants} className="mb-6">
-              <div className="flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleFailure}
-                  theme="filled_blue"
-                  size="large"
-                  text="signup_with"
-                  shape="pill"
-                  width="300"
-                />
-              </div>
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleFailure}
+                    theme="filled_blue"
+                    size="large"
+                    text="signup_with"
+                    shape="pill"
+                    width="300"
+                  />
+                </div>
             </motion.div>
 
             <motion.div variants={itemVariants} className="relative mb-6">

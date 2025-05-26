@@ -6,8 +6,7 @@ import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_URL } from '../config';
 
 const AuthContext = createContext();
 
@@ -43,7 +42,12 @@ export const AuthProvider = ({ children }) => {
         }
       });
 
-      setUser(response.data);
+      if (response.data) {
+        setUser(response.data);
+      } else {
+        localStorage.removeItem('token');
+        setUser(null);
+      }
     } catch (error) {
       console.error('Auth check failed:', error);
       localStorage.removeItem('token');
@@ -112,11 +116,9 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await axios.post(`${API_URL}/auth/register`, userData);
-      const { token, ...user } = response.data;
-      localStorage.setItem('token', token);
-      setUser(user);
       return { success: true };
     } catch (error) {
+      console.error('Registration error:', error.response?.data);
       return {
         success: false,
         error: error.response?.data?.message || 'Registration failed'
@@ -139,7 +141,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     handleGoogleSuccess,
     handleGoogleFailure,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && !!localStorage.getItem('token'),
     isAdmin: user?.role === 'admin'
   };
 

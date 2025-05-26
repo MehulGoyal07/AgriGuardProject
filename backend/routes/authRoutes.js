@@ -9,7 +9,7 @@ const {
   resetPassword
 } = require('../controllers/authController');
 
-const { protect, admin } = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 // Public routes
 router.post('/register', registerUser);
@@ -20,5 +20,14 @@ router.post('/reset-password', resetPassword);
 
 // Protected routes
 router.get('/me', protect, getMe);
+
+// Error handling middleware
+router.use((err, req, res, next) => {
+  console.error('Auth Route Error:', err);
+  res.status(500).json({ 
+    message: 'Authentication error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
 
 module.exports = router;
