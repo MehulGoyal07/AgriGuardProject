@@ -9,15 +9,16 @@ const {
   resetPassword
 } = require('../controllers/authController');
 
-const protect = require('../middlewares/authMiddleware');
+const { protect, admin } = require('../middlewares/authMiddleware');
 
-
-// Routes
+// Public routes
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/me', protect, getMe);
 router.post('/google', googleAuth);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
+
+// Protected routes
+router.get('/me', protect, getMe);
 
 module.exports = router;

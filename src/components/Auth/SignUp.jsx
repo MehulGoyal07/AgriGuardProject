@@ -1,10 +1,12 @@
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 import { motion, useAnimation } from 'framer-motion';
 import { ChevronRight, Leaf, Lock, Mail, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 export default function SignUp() {
   const { handleGoogleSuccess, handleGoogleFailure } = useAuth();
@@ -82,12 +84,16 @@ export default function SignUp() {
 
     setIsLoading(true);
     try {
-      // Dummy DB submission — replace with real backend/Firebase logic
-      console.log('User submitted:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/marketplace');
+      const response = await axios.post('/api/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+      
+      toast.success('Account created successfully! Please sign in.');
+      navigate('/auth/signin');
     } catch (error) {
-      console.error('Signup failed:', error);
+      toast.error(error.response?.data?.message || 'Signup failed. Please try again.');
       setErrors({ api: error.response?.data?.message || 'Signup failed. Please try again.' });
     } finally {
       setIsLoading(false);
@@ -103,9 +109,13 @@ export default function SignUp() {
         className="sm:mx-auto sm:w-full sm:max-w-md"
       >
         <motion.div variants={itemVariants} className="flex flex-col items-center mb-8">
-          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+          <motion.div 
+            className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
             <Leaf className="w-8 h-8 text-green-600" />
-          </div>
+          </motion.div>
           <h2 className="text-center text-3xl font-bold text-gray-800 font-display">
             Join <span className="text-green-600">AgriGuard</span>
           </h2>
@@ -120,19 +130,17 @@ export default function SignUp() {
         >
           <div className="py-8 px-6 sm:px-10">
             <motion.div variants={itemVariants} className="mb-6">
-              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-                <div className="flex justify-center">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleFailure}
-                    theme="filled_blue"
-                    size="large"
-                    text="signup_with"
-                    shape="pill"
-                    width="300"
-                  />
-                </div>
-              </GoogleOAuthProvider>
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleFailure}
+                  theme="filled_blue"
+                  size="large"
+                  text="signup_with"
+                  shape="pill"
+                  width="300"
+                />
+              </div>
             </motion.div>
 
             <motion.div variants={itemVariants} className="relative mb-6">
@@ -253,33 +261,35 @@ export default function SignUp() {
                 )}
               </motion.div>
 
-              {/* Submit */}
               <motion.div variants={itemVariants}>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center items-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow transition duration-200"
+                  className="w-full flex justify-center items-center py-3 px-4 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
-                    <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   ) : (
-                    <>
-                      Register
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </>
+                    <Leaf className="w-5 h-5 mr-2" />
                   )}
+                  {isLoading ? 'Creating account...' : 'Create Account'}
                 </button>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="text-center text-sm text-gray-500 mt-4">
-                Already have an account?{' '}
-                <Link to="/auth/signin" className="text-green-600 hover:underline font-medium">
-                  Log in
-                </Link>
               </motion.div>
             </motion.form>
           </div>
         </motion.div>
+
+        <div className="mt-6 text-center text-sm">
+          <p className="text-gray-600">
+            Already have an account?{' '}
+            <Link
+              to="/auth/signin"
+              className="font-medium text-green-600 hover:text-green-500"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
       </motion.div>
     </div>
   );

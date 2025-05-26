@@ -4,6 +4,9 @@ import { Leaf, Scan } from 'lucide-react';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default function SignIn() {
   const { handleGoogleSuccess, loginWithEmail } = useAuth();
@@ -11,17 +14,25 @@ export default function SignIn() {
   const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      await loginWithEmail(email, password);
-      // Redirect to intended page or marketplace
-      const from = location.state?.from?.pathname || '/marketplace';
-      navigate(from, { replace: true });
+      const result = await loginWithEmail(email, password);
+      if (result.success) {
+        toast.success('Successfully signed in!');
+        // Redirect to intended page or marketplace
+        const from = location.state?.from?.pathname || '/marketplace';
+        navigate(from, { replace: true });
+      } else {
+        toast.error(result.error || 'Login failed. Please try again.');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      toast.error('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,20 +57,21 @@ export default function SignIn() {
             <div className="mb-6">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
-                onError={() => console.log('Google login failed')}
+                onError={() => {
+                  toast.error('Google sign in was unsuccessful');
+                  console.error('Google Sign In was unsuccessful');
+                }}
+                useOneTap
                 theme="filled_blue"
-                size="large"
-                text="signin_with"
                 shape="pill"
+                text="signin_with"
+                size="large"
                 width="300"
+                locale="en"
               />
             </div>
 
             <form onSubmit={handleEmailLogin} className="space-y-5">
-              {error && (
-                <div className="text-red-500 text-sm text-center">{error}</div>
-              )}
-              
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email address
@@ -92,10 +104,15 @@ export default function SignIn() {
 
               <button
                 type="submit"
-                className="w-full flex justify-center items-center py-3 px-4 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-medium shadow-md"
+                disabled={isLoading}
+                className="w-full flex justify-center items-center py-3 px-4 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Leaf className="w-5 h-5 mr-2" />
-                Sign In
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                ) : (
+                  <Leaf className="w-5 h-5 mr-2" />
+                )}
+                {isLoading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
           </div>
@@ -104,12 +121,12 @@ export default function SignIn() {
         <div className="mt-6 text-center text-sm">
           <p className="text-gray-600">
             New to AgriGuard?{' '}
-            <a
-              href="/auth/signup"
+            <Link
+              to="/auth/signup"
               className="font-medium text-green-600 hover:text-green-500"
             >
               Create an account
-            </a>
+            </Link>
           </p>
         </div>
       </motion.div>

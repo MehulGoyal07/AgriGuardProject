@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -30,12 +31,17 @@ const RootApp = () => {
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-      <CartProvider>
-      <App />
-      </CartProvider>
-        
-      </AuthProvider>
+      <GoogleOAuthProvider 
+        clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+        onScriptLoadSuccess={() => console.log('Google OAuth script loaded successfully')}
+        onScriptLoadError={() => console.error('Google OAuth script failed to load')}
+      >
+        <AuthProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </BrowserRouter>
   );
 };

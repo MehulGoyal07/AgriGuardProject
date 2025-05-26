@@ -2,7 +2,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { FaGlobe, FaShoppingCart, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
@@ -15,10 +15,29 @@ const Navbar = () => {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const navigate = useNavigate();
+  const profileDropdownRef = useRef(null);
+
+  useEffect(() => {
+    console.log('Navbar User:', user); // Debug log
+  }, [user]);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -33,6 +52,7 @@ const Navbar = () => {
     logout();
     navigate("/");
     setIsOpen(false);
+    setShowProfileDropdown(false);
   };
 
   const changeLanguage = (lng) => {
@@ -132,7 +152,7 @@ const Navbar = () => {
 
           {/* Auth Links */}
           <div className="flex items-center space-x-4 ml-4">
-            {isAuthenticated() ? (
+            {isAuthenticated ? (
               <>
                 <motion.div whileHover={{ scale: 1.1 }} className="relative">
                   <Link 
@@ -146,25 +166,37 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
                 
-                <div className="relative group">
+                <div className="relative" ref={profileDropdownRef}>
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                     className="flex items-center space-x-2"
                   >
                     <ProfileCircle name={user?.name} />
                     <span className="text-white text-sm font-medium">
-                      {user?.name.split(' ')[0]}
+                      {user?.name || 'User'}
                     </span>
                   </motion.button>
-                  <div className="absolute right-0 mt-2 w-48 bg-green-700/90 backdrop-blur-sm rounded-md shadow-lg py-1 z-10 hidden group-hover:block border border-green-500/20">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-white hover:bg-green-600/50 text-sm flex items-center"
+                  {showProfileDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-sm rounded-md shadow-lg py-2 z-10 border border-green-100/50"
                     >
-                      <FaSignOutAlt className="h-4 w-4 mr-2" />
-                      {t('header.logout')}
-                    </button>
-                  </div>
+                      <div className="px-4 py-2 border-b border-gray-200">
+                        <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
+                        <p className="text-xs text-gray-500">{user?.email || ''}</p>
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-50 text-sm flex items-center transition-colors"
+                      >
+                        <FaSignOutAlt className="h-4 w-4 mr-2 text-green-600" />
+                        {t('header.logout')}
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               </>
             ) : (
@@ -248,28 +280,26 @@ const Navbar = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="md:hidden bg-primary/90 backdrop-blur-sm px-4 py-2 border-t border-green-600/20"
+          className="md:hidden absolute top-full left-0 right-0 bg-primary/90 backdrop-blur-sm py-2 px-4"
         >
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => changeLanguage('en')}
-              className={`px-3 py-1 rounded ${language === 'en' ? 'bg-primary/90 text-white' : 'text-white/80 hover:text-white'}`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => changeLanguage('hi')}
-              className={`px-3 py-1 rounded ${language === 'hi' ? 'bg-primary/90 text-white' : 'text-white/80 hover:text-white'}`}
-            >
-              हिंदी
-            </button>
-            <button
-              onClick={() => changeLanguage('ta')}
-              className={`px-3 py-1 rounded ${language === 'ta' ? 'bg-primary/90 text-white' : 'text-white/80 hover:text-white'}`}
-            >
-              தமிழ்
-            </button>
-          </div>
+          <button
+            onClick={() => changeLanguage('en')}
+            className={`w-full text-left px-4 py-2 ${language === 'en' ? 'bg-green-600/50' : 'hover:bg-green-600/50'} transition-colors`}
+          >
+            English
+          </button>
+          <button
+            onClick={() => changeLanguage('hi')}
+            className={`w-full text-left px-4 py-2 ${language === 'hi' ? 'bg-green-600/50' : 'hover:bg-green-600/50'} transition-colors`}
+          >
+            हिंदी
+          </button>
+          <button
+            onClick={() => changeLanguage('ta')}
+            className={`w-full text-left px-4 py-2 ${language === 'ta' ? 'bg-green-600/50' : 'hover:bg-green-600/50'} transition-colors`}
+          >
+            தமிழ்
+          </button>
         </motion.div>
       )}
 
@@ -277,108 +307,57 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "tween", duration: 0.3 }}
-            className="fixed top-0 left-0 w-full min-h-screen h-full bg-primary/90 backdrop-blur-sm text-white p-6 shadow-lg z-10 md:hidden"
-            style={{ top: showLanguageDropdown ? '84px' : '72px' }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-primary/90 backdrop-blur-sm py-4"
           >
-            <button
-              onClick={toggleMenu}
-              className="absolute top-4 right-6 focus:outline-none"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <nav className="flex flex-col space-y-6 mt-8 text-lg">
+            <div className="container mx-auto px-4 space-y-4">
               {menuItems.map((item) => (
-                <motion.div
-                  whileHover={{ scale: 1.02, color: "#a3e635" }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                <Link
                   key={item.name}
+                  to={item.path}
+                  className="block text-lg text-white hover:text-green-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
                 >
+                  {item.name}
+                </Link>
+              ))}
+              {isAuthenticated ? (
+                <>
                   <Link
-                    to={item.path}
-                    className="block py-2 hover:text-green-300 transition-colors"
+                    to="/cart"
+                    className="block text-lg text-white hover:text-green-300 transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
-                    {item.name}
+                    {t('header.cart')}
                   </Link>
-                </motion.div>
-              ))}
-
-              <div className="border-t border-green-600/20 pt-4">
-                {isAuthenticated() ? (
-                  <>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="py-2"
-                    >
-                      <Link
-                        to="/cart"
-                        className="flex items-center text-white hover:text-green-300"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <FaShoppingCart className="h-5 w-5 mr-2" />
-                        {t('header.cart')}
-                      </Link>
-                    </motion.div>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="py-2"
-                    >
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center text-white hover:text-green-300 w-full"
-                      >
-                        <FaSignOutAlt className="h-5 w-5 mr-2" />
-                        {t('header.logout')}
-                      </button>
-                    </motion.div>
-                  </>
-                ) : (
-                  <>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="py-2"
-                    >
-                      <Link
-                        to="/auth/signin"
-                        className="block text-white hover:text-green-300"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {t('header.signIn')}
-                      </Link>
-                    </motion.div>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="py-2"
-                    >
-                      <Link
-                        to="/auth/signup"
-                        className="block px-4 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors text-center"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {t('header.signUp')}
-                      </Link>
-                    </motion.div>
-                  </>
-                )}
-              </div>
-            </nav>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left text-lg text-white hover:text-green-300 transition-colors"
+                  >
+                    {t('header.logout')}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/auth/signin"
+                    className="block text-lg text-white hover:text-green-300 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {t('header.signIn')}
+                  </Link>
+                  <Link
+                    to="/auth/signup"
+                    className="block text-lg text-white hover:text-green-300 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {t('header.signUp')}
+                  </Link>
+                </>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
